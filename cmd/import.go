@@ -67,18 +67,18 @@ func runImport(cmd *cobra.Command, args []string) {
 	if certFile == "hubserver.pem" {
 		certFile = path.Join(absImportDir, certFile)
 	}
-	// Validate we have signing key, certificate and passfile if provided
-	if _, err := os.Stat(certFile); err != nil {
-		log.Fatal().Err(err).Msgf("Verification public key %s does not exists. Please use `--verifyKey` to set correct public certificate.", certFile)
-	}
-	if len(caFile) > 0 {
-		if _, err := os.Stat(caFile); err != nil {
-			log.Fatal().Err(err).Msg("Provided CA file does not exists or is unreadable.")
-		}
-	}
 
 	sqlImportFile := validateFolder(absImportDir)
 	if !skipVerify {
+		// Validate we have signing key, certificate and passfile if provided
+		if _, err := os.Stat(certFile); err != nil {
+			log.Fatal().Err(err).Msgf("Verification public key %s does not exists. Please use `--verifyKey` to set correct public certificate.", certFile)
+		}
+		if len(caFile) > 0 {
+			if _, err := os.Stat(caFile); err != nil {
+				log.Fatal().Err(err).Msg("Provided CA file does not exists or is unreadable.")
+			}
+		}
 		if err := utils.ValidateFile(sqlImportFile, certFile, caFile); err != nil {
 			log.Fatal().Msg("Signature check of import file failed!")
 		} else {
